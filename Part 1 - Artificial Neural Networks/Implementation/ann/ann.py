@@ -1,13 +1,24 @@
 import pandas as pd
 import numpy as np
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.preprocessing import StandardScaler, LabelEncoder, OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.metrics import confusion_matrix
 from keras.models import Sequential
 from keras.layers import Dense
+from keras.wrappers.scikit_learn import KerasClassifier
 
-# Part 1 - 資料前處理
+def build_classifier():
+    # 建立分類器
+    classifier = Sequential()
+    # 選擇激活函數建立隱藏層
+    classifier.add(Dense(units=6, kernel_initializer='uniform', activation='relu', input_dim=11))
+    classifier.add(Dense(units=6, kernel_initializer='uniform', activation='relu'))
+    # 選擇激活函數建立輸出層
+    classifier.add(Dense(units=1, kernel_initializer='uniform', activation='sigmoid'))
+    # 定義計算
+    classifier.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+    return classifier
 
 # 取資料
 dataset = pd.read_csv('ann/Churn_Modelling.csv')
@@ -31,18 +42,9 @@ sc = StandardScaler()
 x_train = sc.fit_transform(x_train)
 x_test = sc.fit_transform(x_test)
 
-# 訓練ANN
-classifier = Sequential()
-
-# 選擇激活函數建立隱藏層
-classifier.add(Dense(units=6, kernel_initializer='uniform', activation='relu', input_dim=11))
-classifier.add(Dense(units=6, kernel_initializer='uniform', activation='relu'))
-
-# 選擇激活函數建立輸出層
-classifier.add(Dense(units=1, kernel_initializer='uniform', activation='sigmoid'))
-
-# 定義計算
-classifier.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+# 建立分類器 ===============================================================================================
+'''
+classifier = build_classifier()
 
 # 加入訓練集進行訓練
 classifier.fit(x_train, y_train, batch_size=10, epochs=100)
@@ -55,5 +57,13 @@ y_pred = (y_pred > 0.5)
 new_pred = classifier.predict(sc.fit_transform(np.array([[0, 0, 600, 1, 40, 3, 6000, 2, 1, 1, 50000]])))
 new_pred = (new_pred > 0.5)
 
-# 分析混淆矩陣
+# 建立混淆矩陣
 cm = confusion_matrix(y_test, y_pred)
+'''
+# ==========================================================================================================
+
+# 建立分類器 - 交叉驗證法 ====================================================================================
+classifier = KerasClassifier(build_fn=build_classifier, batch_size=10, epochs=100)
+accuracies = cross_val_score(estimator=classifier, X=x_train, y=y_train, cv=10, n_jobs=-1)
+mean = accuracies.mean()
+variance = accuracies.std()
