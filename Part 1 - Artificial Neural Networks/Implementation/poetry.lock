@@ -1,0 +1,17 @@
+[[package]]
+name = "keras"
+version = "2.12.0"
+description = "Deep learning for humans."
+category = "main"
+optional = false
+python-versions = ">=3.8"
+
+[metadata]
+lock-version = "1.1"
+python-versions = "^3.10"
+content-hash = "045a5c918cdb8009917eba6d243c51116511e230a670f58429a3f330d5a05515"
+
+[metadata.files]
+keras = [
+    {file = "keras-2.12.0-py2.py3-none-any.whl", hash = "sha256:35c39534011e909645fb93515452e98e1a0ce23727b55d4918b9c58b2308c15e"},
+]
