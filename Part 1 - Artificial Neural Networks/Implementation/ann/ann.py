@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler, LabelEncoder, OneHotEncoder
 from sklearn.compose import ColumnTransformer
@@ -49,6 +50,10 @@ classifier.fit(x_train, y_train, batch_size=10, epochs=100)
 # 進行測試集預測
 y_pred = classifier.predict(x_test)
 y_pred = (y_pred > 0.5)
+
+# 單一預測
+new_pred = classifier.predict(sc.fit_transform(np.array([[0, 0, 600, 1, 40, 3, 6000, 2, 1, 1, 50000]])))
+new_pred = (new_pred > 0.5)
 
 # 分析混淆矩陣
 cm = confusion_matrix(y_test, y_pred)
