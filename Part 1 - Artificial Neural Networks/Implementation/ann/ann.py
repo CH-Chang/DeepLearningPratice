@@ -1,6 +1,6 @@
 import pandas as pd
 import numpy as np
-from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.model_selection import train_test_split, cross_val_score, GridSearchCV
 from sklearn.preprocessing import StandardScaler, LabelEncoder, OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.metrics import confusion_matrix
@@ -8,17 +8,19 @@ from keras.models import Sequential
 from keras.layers import Dense, Dropout
 from keras.wrappers.scikit_learn import KerasClassifier
 
-def build_classifier():
+def build_classifier(optimizer):
     # 建立分類器
     classifier = Sequential()
     # 選擇激活函數建立隱藏層
     classifier.add(Dense(units=6, kernel_initializer='uniform', activation='relu', input_dim=11))
-    classifier.add(Dropout(p=0.1))
+    # 防止過擬合
+    classifier.add(Dropout(rate=0.1))
     classifier.add(Dense(units=6, kernel_initializer='uniform', activation='relu'))
+    classifier.add(Dropout(rate=0.1))
     # 選擇激活函數建立輸出層
     classifier.add(Dense(units=1, kernel_initializer='uniform', activation='sigmoid'))
     # 定義計算
-    classifier.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+    classifier.compile(optimizer=optimizer, loss='binary_crossentropy', metrics=['accuracy'])
     return classifier
 
 # 取資料
@@ -64,7 +66,18 @@ cm = confusion_matrix(y_test, y_pred)
 # ==========================================================================================================
 
 # 建立分類器 - 交叉驗證法 ====================================================================================
+'''
 classifier = KerasClassifier(build_fn=build_classifier, batch_size=10, epochs=100)
 accuracies = cross_val_score(estimator=classifier, X=x_train, y=y_train, cv=10, n_jobs=-1)
 mean = accuracies.mean()
 variance = accuracies.std()
+'''
+# ==========================================================================================================
+
+# 建立分類器 - 網格搜索法 ====================================================================================
+classifier = KerasClassifier(build_fn=build_classifier)
+parameters = { 'batch_size': [25, 32], 'epochs': [100, 500], 'optimizer': ['adam', 'rmsprop'] }
+grid_search = GridSearchCV(estimator=classifier, param_grid=parameters, scoring='accuracy', cv=10)
+grid_search = grid_search.fit(x_train, y_train)
+best_parameters = grid_search.best_params_
+best_accuracy = grid_search.best_score_
