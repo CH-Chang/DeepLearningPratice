@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "rnn"
+name = "cnn"
 version = "0.1.0"
 description = ""
 authors = ["張智翔 <ch.chang.job@gmail.com>"]
