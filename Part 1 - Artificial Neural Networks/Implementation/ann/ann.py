@@ -5,7 +5,7 @@ from sklearn.preprocessing import StandardScaler, LabelEncoder, OneHotEncoder
 from sklearn.compose import ColumnTransformer
 from sklearn.metrics import confusion_matrix
 from keras.models import Sequential
-from keras.layers import Dense
+from keras.layers import Dense, Dropout
 from keras.wrappers.scikit_learn import KerasClassifier
 
 def build_classifier():
@@ -13,6 +13,7 @@ def build_classifier():
     classifier = Sequential()
     # 選擇激活函數建立隱藏層
     classifier.add(Dense(units=6, kernel_initializer='uniform', activation='relu', input_dim=11))
+    classifier.add(Dropout(p=0.1))
     classifier.add(Dense(units=6, kernel_initializer='uniform', activation='relu'))
     # 選擇激活函數建立輸出層
     classifier.add(Dense(units=1, kernel_initializer='uniform', activation='sigmoid'))
