@@ -11,6 +11,9 @@ keras = "^2.12.0"
 tensorflow-io-gcs-filesystem = "0.31.0"
 tensorflow = "^2.12.0"
 Theano = "^1.0.5"
+pandas = "^2.0.1"
+matplotlib = "^3.7.1"
+scikit-learn = "^1.2.2"
 
 
 [build-system]
