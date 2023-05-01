@@ -1,9 +1,10 @@
-import numpy as np
-import matplotlib.pyplot as plt
 import pandas as pd
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler, LabelEncoder, OneHotEncoder
 from sklearn.compose import ColumnTransformer
+from sklearn.metrics import confusion_matrix
+from keras.models import Sequential
+from keras.layers import Dense
 
 # Part 1 - 資料前處理
 
@@ -28,4 +29,26 @@ x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2, random_
 sc = StandardScaler()
 x_train = sc.fit_transform(x_train)
 x_test = sc.fit_transform(x_test)
-print(x)
+
+# 訓練ANN
+classifier = Sequential()
+
+# 選擇激活函數建立隱藏層
+classifier.add(Dense(units=6, kernel_initializer='uniform', activation='relu', input_dim=11))
+classifier.add(Dense(units=6, kernel_initializer='uniform', activation='relu'))
+
+# 選擇激活函數建立輸出層
+classifier.add(Dense(units=1, kernel_initializer='uniform', activation='sigmoid'))
+
+# 定義計算
+classifier.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+
+# 加入訓練集進行訓練
+classifier.fit(x_train, y_train, batch_size=10, epochs=100)
+
+# 進行測試集預測
+y_pred = classifier.predict(x_test)
+y_pred = (y_pred > 0.5)
+
+# 分析混淆矩陣
+cm = confusion_matrix(y_test, y_pred)
